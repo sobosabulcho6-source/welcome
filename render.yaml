@@ -1,0 +1,29 @@
+# Deploy this Blueprint from the GitHub repository. It creates the API, serves the frontend, and provisions PostgreSQL.
+databases:
+  - name: oems-db
+    plan: free
+    databaseName: oems
+    user: oems_user
+
+services:
+  - type: web
+    name: oems
+    runtime: node
+    rootDir: backend
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: oems-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ADMIN_USERNAME
+        value: admin
+      - key: ADMIN_PASSWORD
+        sync: false
